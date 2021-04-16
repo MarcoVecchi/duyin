@@ -1,25 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
+import svgLayout from './img/6603-17.svg';
+import { SVG } from './script/svgIntegrationB';
+
+const htmlContainer  =  <object id="objContainer" data={svgLayout} />;
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {htmlContainer}
     </div>
   );
 }
+
+const cfg = {
+  Provider: 'http://localhost:10001',
+  Psm: 'http://localhost:10002',
+  // Rotation: 270,
+  Scale: 100
+}
+
+setTimeout(function(){SVG(document.getElementById("objContainer"), cfg)},3000);
 
 export default App;
