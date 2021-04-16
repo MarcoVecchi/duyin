@@ -1,26 +1,17 @@
-import "./style.css";
-import React, { useState } from "react";
-import { render } from "react-dom";
-import svgLayout from './img/6603-17.svg';
-import { SVG } from './script/svgIntegrationB';
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
 
-const htmlContainer  =  <object id="objContainer" data={svgLayout} />;
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
-const cfg = {
-  Provider: 'http://localhost:10001',
-  Psm: 'http://localhost:10002',
-  // Rotation: 270,
-  Scale: 100
-}
-
-function App() {
-    return (
-        <div className="App">
-          {htmlContainer}
-        </div>
-      );
-}
-
-render(<App />, document.getElementById("root"));
-
-setTimeout(function(){SVG(document.getElementById("objContainer"), cfg)}, 3000);
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
