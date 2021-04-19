@@ -1,24 +1,24 @@
 {
   "files": {
     "main.css": "/duyin/static/css/main.9d5b29c0.chunk.css",
-    "main.js": "/duyin/static/js/main.64dea597.chunk.js",
-    "main.js.map": "/duyin/static/js/main.64dea597.chunk.js.map",
+    "main.js": "/duyin/static/js/main.51af8492.chunk.js",
+    "main.js.map": "/duyin/static/js/main.51af8492.chunk.js.map",
     "runtime-main.js": "/duyin/static/js/runtime-main.d45b5d01.js",
     "runtime-main.js.map": "/duyin/static/js/runtime-main.d45b5d01.js.map",
-    "static/js/2.90e25586.chunk.js": "/duyin/static/js/2.90e25586.chunk.js",
-    "static/js/2.90e25586.chunk.js.map": "/duyin/static/js/2.90e25586.chunk.js.map",
+    "static/js/2.c9709f98.chunk.js": "/duyin/static/js/2.c9709f98.chunk.js",
+    "static/js/2.c9709f98.chunk.js.map": "/duyin/static/js/2.c9709f98.chunk.js.map",
     "static/js/3.d72c9a60.chunk.js": "/duyin/static/js/3.d72c9a60.chunk.js",
     "static/js/3.d72c9a60.chunk.js.map": "/duyin/static/js/3.d72c9a60.chunk.js.map",
     "index.html": "/duyin/index.html",
     "static/css/main.9d5b29c0.chunk.css.map": "/duyin/static/css/main.9d5b29c0.chunk.css.map",
-    "static/js/2.90e25586.chunk.js.LICENSE.txt": "/duyin/static/js/2.90e25586.chunk.js.LICENSE.txt",
+    "static/js/2.c9709f98.chunk.js.LICENSE.txt": "/duyin/static/js/2.c9709f98.chunk.js.LICENSE.txt",
     "static/media/6603-17.1ae13ed0.svg": "/duyin/static/media/6603-17.1ae13ed0.svg",
-    "static/media/pallet.9f969d91.svg": "/duyin/static/media/pallet.9f969d91.svg"
+    "static/media/pallet.c13180f5.svg": "/duyin/static/media/pallet.c13180f5.svg"
   },
   "entrypoints": [
     "static/js/runtime-main.d45b5d01.js",
-    "static/js/2.90e25586.chunk.js",
+    "static/js/2.c9709f98.chunk.js",
     "static/css/main.9d5b29c0.chunk.css",
-    "static/js/main.64dea597.chunk.js"
+    "static/js/main.51af8492.chunk.js"
   ]
 }
