@@ -1,4 +1,5 @@
-import pallet from "../img/Components/pallet.svg"
+import React, { Component } from 'react';
+import {ReactComponent as ReactLu} from "../img/Components/pallet.svg"
 
 /* eslint-disable */
 var ASIArray;
@@ -24,6 +25,14 @@ var btnWarning;
 var contDiv;
 var rootGroup;
 var demoData;
+
+class LoadingUnit extends Component {
+    render(props) {
+      return (
+          {ReactLu}
+          );
+    }
+}
 
 export function SVG(elem, cfg) {
     logycalStateUrl = cfg.Provider;
@@ -125,10 +134,10 @@ export function SVG(elem, cfg) {
     if (cfg.FloorFilterVisible == false) selectedFloor = 0;
 
     // POLLING LOGYCAL STATUS
-    logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
+    logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, Rotation, Scale);
 
     // POLLING PHYSICAL STATUS
-    physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, physicalStateUrl + '/psm/livestatus', Scale);
+    // physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, physicalStateUrl + '/psm/livestatus', Scale);
 
     // contDiv = document.createElement('div');
     // contDiv.style.zIndex = 1;
@@ -575,14 +584,14 @@ function clearPopovers() {
     // $(document.getElementById("divSVGContainer")).find(".popover").popover('hide');
 }
 
-function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
-    if (!document.getAnimations().some(a => {
-        return (a.playState == 'paused')
-    }) || Force) {
-        logycalStatexmlHttp = new XMLHttpRequest();
+function logicalStateFetch(url, Rotation, Scale, Force) {
+    // if (!document.getAnimations().some(a => {
+    //     return (a.playState == 'paused')
+    // }) || Force) {
+    //     logycalStatexmlHttp = new XMLHttpRequest();
 
-        logycalStatexmlHttp.onreadystatechange = function () {
-            if (logycalStatexmlHttp.readyState == 4 && logycalStatexmlHttp.status == 200 || demoData) {
+    //     logycalStatexmlHttp.onreadystatechange = function () {
+    //         if (logycalStatexmlHttp.readyState == 4 && logycalStatexmlHttp.status == 200 || demoData) {
                 try {
                     var data = demoData || JSON.parse(logycalStatexmlHttp.responseText);
                     // Se è specificata una scala faccio un ovverride dei dati dimensionali.
@@ -915,39 +924,39 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                     }
 
                     //rimuovo tutti gli elementi che non sono + nella query della waTracking (non vanno + tracciati.)
-                    ASIArray.forEach(function (asiItem) {
-                        asiItem.udcObjArr.filter(function (udcObjItem) {
-                            return data.find(function (item) {
-                                return udcObjItem.Id_Udc == item.Id_Udc;
-                            }) == undefined;
-                        }).forEach(function (item) {
-                            // rimuovo dal rendering
-                            item.udcObj.remove();
-                            item.Id_Udc = null;
-                        });
+                    // ASIArray.forEach(function (asiItem) {
+                    //     asiItem.udcObjArr.filter(function (udcObjItem) {
+                    //         return data.find(function (item) {
+                    //             return udcObjItem.Id_Udc == item.Id_Udc;
+                    //         }) == undefined;
+                    //     }).forEach(function (item) {
+                    //         // rimuovo dal rendering
+                    //         item.udcObj.remove();
+                    //         item.Id_Udc = null;
+                    //     });
 
-                        asiItem.udcObjArr = asiItem.udcObjArr.filter(function (obj) {
-                            return obj.Id_Udc != null;
-                        });
-                    });
+                    //     asiItem.udcObjArr = asiItem.udcObjArr.filter(function (obj) {
+                    //         return obj.Id_Udc != null;
+                    //     });
+                    // });
 
                     //rimuovo tutte le sequenze che non sono più attiva.
-                    ASIArray.filter(function (seqItem) {
-                        return data.find(function (item) {
-                            return seqItem.Id_Percorso == item.Id_Percorso && seqItem.Sequenza_Percorso == item.Sequenza_Percorso;
-                        }) == undefined;
-                    }).forEach(function (item) {
-                        // rimuovo dal rendering
-                        item.svgElement.forEach(function (svgEl) {
-                            // può essere che non abbia una sequenza se non ho l'item sul layout nominato ???
-                            if (svgEl.seqObj) svgEl.seqObj.remove();
-                            svgEl.seqObj = null;
-                        });
+                    // ASIArray.filter(function (seqItem) {
+                    //     return data.find(function (item) {
+                    //         return seqItem.Id_Percorso == item.Id_Percorso && seqItem.Sequenza_Percorso == item.Sequenza_Percorso;
+                    //     }) == undefined;
+                    // }).forEach(function (item) {
+                    //     // rimuovo dal rendering
+                    //     item.svgElement.forEach(function (svgEl) {
+                    //         // può essere che non abbia una sequenza se non ho l'item sul layout nominato ???
+                    //         if (svgEl.seqObj) svgEl.seqObj.remove();
+                    //         svgEl.seqObj = null;
+                    //     });
 
-                        item.Id_Percorso = null;
-                        item.Sequenza_Percorso = null;
-                        item.DEST = null;
-                    });
+                    //     item.Id_Percorso = null;
+                    //     item.Sequenza_Percorso = null;
+                    //     item.DEST = null;
+                    // });
 
                     // aggiorno le posizioni dell udc, delle macchine, delle sequenze.
                     data.forEach(function (item) {
@@ -958,68 +967,68 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                         });
 
                         try {
-                            //FRECCE SEQUENZE
-                            if (item.DEST) {
-                                // recupero l'eventuale oggetto sequenza
-                                var seqObj = ASIArray.find(function (seqItem) {
-                                    return seqItem.Id_Percorso == item.Id_Percorso && seqItem.Sequenza_Percorso == item.Sequenza_Percorso;
-                                });
+                            // //FRECCE SEQUENZE
+                            // if (item.DEST) {
+                            //     // recupero l'eventuale oggetto sequenza
+                            //     var seqObj = ASIArray.find(function (seqItem) {
+                            //         return seqItem.Id_Percorso == item.Id_Percorso && seqItem.Sequenza_Percorso == item.Sequenza_Percorso;
+                            //     });
 
-                                // derfinisco il colore da usare per disegnare la freccia in base allo stato del passo
-                                var svgItemDest = void 0;
-                                var color = void 0;
-                                switch (item.Id_Tipo_Stato_Percorso) {
-                                    case 2:
-                                        color = "green";
-                                        break;
-                                    case 4:
-                                        color = "yellow";
-                                        break;
-                                    default:
-                                        color = "#007bff";
-                                }
+                            //     // derfinisco il colore da usare per disegnare la freccia in base allo stato del passo
+                            //     var svgItemDest = void 0;
+                            //     var color = void 0;
+                            //     switch (item.Id_Tipo_Stato_Percorso) {
+                            //         case 2:
+                            //             color = "green";
+                            //             break;
+                            //         case 4:
+                            //             color = "yellow";
+                            //             break;
+                            //         default:
+                            //             color = "#007bff";
+                            //     }
 
-                                // se non ho un oggetto sequenza lo creo altrimenti gli cambio colore.
-                                if (!seqObj) {
-                                    svgItemDest = ASIArray.find(function (ASIArrayObj) {
-                                        return ASIArrayObj.ASI == item.DEST;
-                                    });
-                                    // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
-                                    var seqPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
-                                    if (svgItemDest && svgItemDest.svgElement.length > 0 && ASI.svgElement.length > 0) {
-                                        gArrows.appendChild(seqPath);
-                                        var destPoint = svgItemDest.svgElement[0].center;
-                                        if (svgItemDest.svgElement[0].flowPath) {
-                                            destPoint = svgItemDest.svgElement[0].flowPath.getPointAtLength(svgItemDest.PosX);
-                                            document.getElementById('gMotion' + svgItemDest.svgElement[0].flowPath.id).appendChild(seqPath);
-                                        }
-                                        var sPoint =  ASI.svgElement[0].center;
-                                        if (ASI.svgElement[0].flowPath){
-                                            sPoint = ASI.svgElement[0].flowPath.getPointAtLength(ASI.PosX);
-                                            document.getElementById('gMotion' + ASI.svgElement[0].flowPath.id).appendChild(seqPath);
-                                        }
+                            //     // se non ho un oggetto sequenza lo creo altrimenti gli cambio colore.
+                            //     if (!seqObj) {
+                            //         svgItemDest = ASIArray.find(function (ASIArrayObj) {
+                            //             return ASIArrayObj.ASI == item.DEST;
+                            //         });
+                            //         // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
+                            //         var seqPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
+                            //         if (svgItemDest && svgItemDest.svgElement.length > 0 && ASI.svgElement.length > 0) {
+                            //             gArrows.appendChild(seqPath);
+                            //             var destPoint = svgItemDest.svgElement[0].center;
+                            //             if (svgItemDest.svgElement[0].flowPath) {
+                            //                 destPoint = svgItemDest.svgElement[0].flowPath.getPointAtLength(svgItemDest.PosX);
+                            //                 document.getElementById('gMotion' + svgItemDest.svgElement[0].flowPath.id).appendChild(seqPath);
+                            //             }
+                            //             var sPoint =  ASI.svgElement[0].center;
+                            //             if (ASI.svgElement[0].flowPath){
+                            //                 sPoint = ASI.svgElement[0].flowPath.getPointAtLength(ASI.PosX);
+                            //                 document.getElementById('gMotion' + ASI.svgElement[0].flowPath.id).appendChild(seqPath);
+                            //             }
 
-                                        if (ASI.svgElement[0].flowPath || svgItemDest.svgElement[0].flowPath) seqPath.style.willChange = 'transform';
+                            //             if (ASI.svgElement[0].flowPath || svgItemDest.svgElement[0].flowPath) seqPath.style.willChange = 'transform';
                                         
-                                        seqPath.setAttributeNS(null, "d", "M" + sPoint.x + " " + sPoint.y + " L" + destPoint.x + " " + destPoint.y);
-                                        seqPath.setAttributeNS(null, "marker-end", "url(#markerTriangolo" + item.Id_Tipo_Stato_Percorso) + ")";
-                                        seqPath.style.stroke = color;
-                                        seqPath.style.strokeWidth = 300 / Scale;
+                            //             seqPath.setAttributeNS(null, "d", "M" + sPoint.x + " " + sPoint.y + " L" + destPoint.x + " " + destPoint.y);
+                            //             seqPath.setAttributeNS(null, "marker-end", "url(#markerTriangolo" + item.Id_Tipo_Stato_Percorso) + ")";
+                            //             seqPath.style.stroke = color;
+                            //             seqPath.style.strokeWidth = 300 / Scale;
 
-                                        ASI.Id_Percorso = item.Id_Percorso;
-                                        ASI.Sequenza_Percorso = item.Sequenza_Percorso;
-                                        ASI.Id_Tipo_Stato_Percorso = item.Id_Tipo_Stato_Percorso;
-                                        ASI.svgElement[0].seqObj = seqPath;
-                                        ASI.svgElement[0].destObj = svgItemDest.svgElement[0];
-                                        ASI.DEST = item.DEST;
-                                    }
-                                } else if (seqObj.Id_Percorso && seqObj.Id_Tipo_Stato_Percorso != item.Id_Tipo_Stato_Percorso) {
-                                    ASI.Id_Tipo_Stato_Percorso = item.Id_Tipo_Stato_Percorso;
-                                    ASI.svgElement[0].seqObj.style.stroke = color;
-                                    // creo la freccia che verrà assegnata come markerEnd della linea. DA FARE MEGLIO!
-                                    ASI.svgElement[0].seqObj.setAttributeNS(null, "marker-end", "url(#markerTriangolo" + item.Id_Tipo_Stato_Percorso + ")");
-                                }
-                            }
+                            //             ASI.Id_Percorso = item.Id_Percorso;
+                            //             ASI.Sequenza_Percorso = item.Sequenza_Percorso;
+                            //             ASI.Id_Tipo_Stato_Percorso = item.Id_Tipo_Stato_Percorso;
+                            //             ASI.svgElement[0].seqObj = seqPath;
+                            //             ASI.svgElement[0].destObj = svgItemDest.svgElement[0];
+                            //             ASI.DEST = item.DEST;
+                            //         }
+                            //     } else if (seqObj.Id_Percorso && seqObj.Id_Tipo_Stato_Percorso != item.Id_Tipo_Stato_Percorso) {
+                            //         ASI.Id_Tipo_Stato_Percorso = item.Id_Tipo_Stato_Percorso;
+                            //         ASI.svgElement[0].seqObj.style.stroke = color;
+                            //         // creo la freccia che verrà assegnata come markerEnd della linea. DA FARE MEGLIO!
+                            //         ASI.svgElement[0].seqObj.setAttributeNS(null, "marker-end", "url(#markerTriangolo" + item.Id_Tipo_Stato_Percorso + ")");
+                            //     }
+                            // }
 
                             //TRACKING UDC
                             var gUdc = null;
@@ -1085,13 +1094,8 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
 
                                     moveUdc(udcObj, item, ASI);
                                 } else {
-                                    var req = new XMLHttpRequest();
-
-                                    req.open("GET", pallet, true);
-
-                                    req.onload = function (e) {
-                                        var parser = new DOMParser();
-                                        var gUdc = parser.parseFromString(req.responseText, "image/svg+xml").getElementsByTagName('g')[0];
+                                        var gUdc = <LoadingUnit></LoadingUnit>;
+                                        console.log(gUdc);
                                         var width = (item.LARGHEZZA ? item.LARGHEZZA : 800 / Scale || 1) * 3.543;
                                         var height = (item.PROFONDITA ? item.PROFONDITA : 1200 / Scale || 1) * 3.543;
 
@@ -1099,23 +1103,23 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                             yScale = 1;
 
                                         // Se non ho trovato il file aggiungo un quadrato.
-                                        if (!gUdc) {
-                                            gUdc = document.createElementNS("http://www.w3.org/2000/svg", 'g');
-                                            gUdc.id = 'udc' + item.Id_Udc;
-                                            // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
-                                            udc = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-                                            udc.setAttributeNS(null, "width", width);
-                                            udc.setAttributeNS(null, "height", height);
-                                            udc.setAttributeNS(null, "x", 0);
-                                            udc.setAttributeNS(null, "y", 0);
-                                            //udc.setAttributeNS(null, "pointer-events", "none");
-                                            udc.style.fill = item.udcColour || "#007bff";
-                                            gUdc.appendChild(udc);
-                                        } else {
+                                        // if (!gUdc) {
+                                        //     gUdc = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+                                        //     gUdc.id = 'udc' + item.Id_Udc;
+                                        //     // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
+                                        //     udc = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+                                        //     udc.setAttributeNS(null, "width", width);
+                                        //     udc.setAttributeNS(null, "height", height);
+                                        //     udc.setAttributeNS(null, "x", 0);
+                                        //     udc.setAttributeNS(null, "y", 0);
+                                        //     //udc.setAttributeNS(null, "pointer-events", "none");
+                                        //     udc.style.fill = item.udcColour || "#007bff";
+                                        //     gUdc.appendChild(udc);
+                                        // } else {
                                             svg.appendChild(gUdc);
                                             xScale = width / gUdc.getBBox().width;
                                             yScale = height / gUdc.getBBox().height;
-                                        }
+                                        // }
 
                                         gUdc.id = 'udc' + item.Id_Udc;
 
@@ -1137,57 +1141,47 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                         initSl(udcObj, gUdc);
 
                                         moveUdc(udcObj, item, ASI);
-                                    };
-
-                                    req.addEventListener("error", function () {
-                                        setTimeout(function () {
-                                            req.open("GET", item.svgUdc, true);
-                                            req.send();
-                                        }, 1000);
-                                    });
-
-                                    req.send();
                                 }
                             }
 
-                            //LOCKICON
-                            if ((item.LOCKED != ASI.LOCKED || ASI.LOCKED == undefined) && ASI.svgElement.length > 0) {
-                                ASI.LOCKED = item.LOCKED;
-                                ASI.Motivo_Blocco = item.Motivo_Blocco;
-                                if (item.LOCKED) {
-                                    setTimeout(function(){
-                                        var req = new XMLHttpRequest();
-                                        req.open("GET", 'App/SVG/Icons/lock.svg', true);
-                                        req.onload = function (e) {
-                                            var parser = new DOMParser();
-                                            var lockIcon = document.createElementNS("http://www.w3.org/2000/svg", 'g');
-                                            lockIcon.setAttributeNS(null, "id", "lock" + ASI.ASI);
-                                            lockIcon.appendChild(parser.parseFromString(req.responseText, "image/svg+xml").getElementsByTagName('svg')[0]);
-                                            lockIcon.childNodes[0].setAttributeNS(null, "width", 60);
-                                            lockIcon.childNodes[0].setAttributeNS(null, "height", 60);
-                                            lockIcon.childNodes[0].setAttributeNS(null, "viewbox", '0 0 60 60');
-                                            ASI.svgElement[0].grpObj.parentElement.appendChild(lockIcon);
+                            // //LOCKICON
+                            // if ((item.LOCKED != ASI.LOCKED || ASI.LOCKED == undefined) && ASI.svgElement.length > 0) {
+                            //     ASI.LOCKED = item.LOCKED;
+                            //     ASI.Motivo_Blocco = item.Motivo_Blocco;
+                            //     if (item.LOCKED) {
+                            //         setTimeout(function(){
+                            //             var req = new XMLHttpRequest();
+                            //             req.open("GET", 'App/SVG/Icons/lock.svg', true);
+                            //             req.onload = function (e) {
+                            //                 var parser = new DOMParser();
+                            //                 var lockIcon = document.createElementNS("http://www.w3.org/2000/svg", 'g');
+                            //                 lockIcon.setAttributeNS(null, "id", "lock" + ASI.ASI);
+                            //                 lockIcon.appendChild(parser.parseFromString(req.responseText, "image/svg+xml").getElementsByTagName('svg')[0]);
+                            //                 lockIcon.childNodes[0].setAttributeNS(null, "width", 60);
+                            //                 lockIcon.childNodes[0].setAttributeNS(null, "height", 60);
+                            //                 lockIcon.childNodes[0].setAttributeNS(null, "viewbox", '0 0 60 60');
+                            //                 ASI.svgElement[0].grpObj.parentElement.appendChild(lockIcon);
 
-                                            if (ASI.svgElement[0].flowPath){
-                                                lockIcon.style.offsetPath = ASI.svgElement[0].grpObj.style.offsetPath;
-                                                lockIcon.style.offsetDistance = ASI.PosX + 'px';
-                                                lockIcon.style.offsetRotate = "auto " + ASI.Rotation + 'deg'
-                                                lockIcon.style.willChange = "transform"
-                                                lockIcon.style.offsetAnchor = (lockIcon.getBBox().x + lockIcon.getBBox().width / 2) + 'px ' + (lockIcon.getBBox().y + lockIcon.getBBox().height / 2) + 'px'
-                                            } else {
-                                                lockIcon.setAttributeNS(null, 'transform','translate(' + [ASI.svgElement[0].center.x - 30, ASI.svgElement[0].center.y - 30] + ")");
-                                            }
+                            //                 if (ASI.svgElement[0].flowPath){
+                            //                     lockIcon.style.offsetPath = ASI.svgElement[0].grpObj.style.offsetPath;
+                            //                     lockIcon.style.offsetDistance = ASI.PosX + 'px';
+                            //                     lockIcon.style.offsetRotate = "auto " + ASI.Rotation + 'deg'
+                            //                     lockIcon.style.willChange = "transform"
+                            //                     lockIcon.style.offsetAnchor = (lockIcon.getBBox().x + lockIcon.getBBox().width / 2) + 'px ' + (lockIcon.getBBox().y + lockIcon.getBBox().height / 2) + 'px'
+                            //                 } else {
+                            //                     lockIcon.setAttributeNS(null, 'transform','translate(' + [ASI.svgElement[0].center.x - 30, ASI.svgElement[0].center.y - 30] + ")");
+                            //                 }
 
-                                            ASI.lockIcon = lockIcon
-                                        }
-                                        req.send();
-                                    },500);
-                                } else {
-                                    var lockIcon = document.getElementById("lock" + ASI.ASI);
-                                    ASI.lockIcon = null;
-                                    if (lockIcon) lockIcon.remove();
-                                }
-                            }
+                            //                 ASI.lockIcon = lockIcon
+                            //             }
+                            //             req.send();
+                            //         },500);
+                            //     } else {
+                            //         var lockIcon = document.getElementById("lock" + ASI.ASI);
+                            //         ASI.lockIcon = null;
+                            //         if (lockIcon) lockIcon.remove();
+                            //     }
+                            // }
                         } catch (e) {
                             console.log(e, e.message);
                         }
@@ -1198,145 +1192,145 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                 } catch (e) {
                     console.log(e, e.message);
                 }
-            }
-        };
+            // }
+    //     };
 
-        logycalStatexmlHttp.addEventListener('loadend', function () {
-            if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
-        });
+    //     logycalStatexmlHttp.addEventListener('loadend', function () {
+    //         if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, Rotation, Scale);
+    //     });
 
-        logycalStatexmlHttp.open("GET", url, true); // true for asynchronous
+    //     logycalStatexmlHttp.open("GET", url, true); // true for asynchronous
 
-        logycalStatexmlHttp.send(null);
-    } else if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
+    //     logycalStatexmlHttp.send(null);
+    // } else if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, Rotation, Scale);
 }
 
-function physicalStateFetch(pUrl, Scale) {
-    if (!document.getAnimations().some(a => {
-        return (a.playState == 'paused')
-    })) {
-        physicalStatexmlHttp = new XMLHttpRequest();
+// function physicalStateFetch(pUrl, Scale) {
+//     if (!document.getAnimations().some(a => {
+//         return (a.playState == 'paused')
+//     })) {
+//         physicalStatexmlHttp = new XMLHttpRequest();
 
-        physicalStatexmlHttp.onreadystatechange = function () {
-            if (physicalStatexmlHttp.readyState == 4 && physicalStatexmlHttp.status == 200) {
-                var jsonData = JSON.parse(physicalStatexmlHttp.responseText)
+//         physicalStatexmlHttp.onreadystatechange = function () {
+//             if (physicalStatexmlHttp.readyState == 4 && physicalStatexmlHttp.status == 200) {
+//                 var jsonData = JSON.parse(physicalStatexmlHttp.responseText)
 
-                if (jsonData.filter(function (data) {
-                    return data.tagType == 10 && data.value == true;
-                }).length > 0) {
-                    if (!btnFault) {
-                        btnFault = document.createElement('button');
-                        btnFault.setAttribute("class", "btn btn-danger m-2 float-none");
-                        btnFault.innerText = 'RESET FAULT'
-                        btnFault.onclick = function (e) {
-                            var req = new XMLHttpRequest();
-                            req.onreadystatechange = function () {
-                                if (req.readyState == 4 && req.status == 200) {
-                                    console.log(req.responseText);
-                                }
-                            };
-                            req.open("GET", physicalStateUrl + '/psm/resetFault', true);
-                            req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                            req.send();
-                        }
-                        contDiv.appendChild(btnFault);
-                    }
-                } else if (btnFault) {
-                    btnFault.remove();
-                    btnFault = null;
-                }
+//                 if (jsonData.filter(function (data) {
+//                     return data.tagType == 10 && data.value == true;
+//                 }).length > 0) {
+//                     if (!btnFault) {
+//                         btnFault = document.createElement('button');
+//                         btnFault.setAttribute("class", "btn btn-danger m-2 float-none");
+//                         btnFault.innerText = 'RESET FAULT'
+//                         btnFault.onclick = function (e) {
+//                             var req = new XMLHttpRequest();
+//                             req.onreadystatechange = function () {
+//                                 if (req.readyState == 4 && req.status == 200) {
+//                                     console.log(req.responseText);
+//                                 }
+//                             };
+//                             req.open("GET", physicalStateUrl + '/psm/resetFault', true);
+//                             req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//                             req.send();
+//                         }
+//                         contDiv.appendChild(btnFault);
+//                     }
+//                 } else if (btnFault) {
+//                     btnFault.remove();
+//                     btnFault = null;
+//                 }
 
-                if (jsonData.filter(function (data) {
-                    return data.tagType == 9 && data.value == true;
-                }).length > 0) {
-                    if (!btnWarning) {
-                        btnWarning = document.createElement('button');
-                        btnWarning.setAttribute("class", "btn btn-warning m-2");
-                        btnWarning.innerText = 'RESET WARNING'
-                        btnWarning.onclick = function (e) {
-                            var req = new XMLHttpRequest();
-                            req.onreadystatechange = function () {
-                                if (req.readyState == 4 && req.status == 200) {
-                                    console.log(req.responseText);
-                                }
-                            };
-                            req.open("GET", physicalStateUrl + '/psm/resetWarning', true);
-                            req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-                            req.send();
-                        }
-                        contDiv.appendChild(btnWarning);
-                    }
-                } else if (btnWarning) {
-                    btnWarning.remove();
-                    btnWarning = null;
-                }
+//                 if (jsonData.filter(function (data) {
+//                     return data.tagType == 9 && data.value == true;
+//                 }).length > 0) {
+//                     if (!btnWarning) {
+//                         btnWarning = document.createElement('button');
+//                         btnWarning.setAttribute("class", "btn btn-warning m-2");
+//                         btnWarning.innerText = 'RESET WARNING'
+//                         btnWarning.onclick = function (e) {
+//                             var req = new XMLHttpRequest();
+//                             req.onreadystatechange = function () {
+//                                 if (req.readyState == 4 && req.status == 200) {
+//                                     console.log(req.responseText);
+//                                 }
+//                             };
+//                             req.open("GET", physicalStateUrl + '/psm/resetWarning', true);
+//                             req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+//                             req.send();
+//                         }
+//                         contDiv.appendChild(btnWarning);
+//                     }
+//                 } else if (btnWarning) {
+//                     btnWarning.remove();
+//                     btnWarning = null;
+//                 }
 
-                // TO DO : CAPIRE COME GESTIRE I TIPI DI TAGS
-                jsonData.filter(function (data) {
-                    return data.value != null && (data.tagType == 4 || data.tagType == 12 || data.tagType == 15);
-                }).forEach(function (tagObj) {
-                    var ASI = ASIArray.find(function (ASI) {
-                        return ASI.ASI == tagObj.asi;
-                    });
+//                 // TO DO : CAPIRE COME GESTIRE I TIPI DI TAGS
+//                 jsonData.filter(function (data) {
+//                     return data.value != null && (data.tagType == 4 || data.tagType == 12 || data.tagType == 15);
+//                 }).forEach(function (tagObj) {
+//                     var ASI = ASIArray.find(function (ASI) {
+//                         return ASI.ASI == tagObj.asi;
+//                     });
 
-                    if (ASI) {
-                        // GESTIONE ANIMAZIONE
-                        // se ho associato una flowPath (percorso) ed ho il posizionamento delle macchina allora il mio riferimento per posizionarmi sarà il punto del percorso tenendo conto delle sue trasformazioni.
-                        if (ASI.svgElement.length > 0 && tagObj.tagType == 15) transform(ASI, tagObj.value / Scale * 3.543);
+//                     if (ASI) {
+//                         // GESTIONE ANIMAZIONE
+//                         // se ho associato una flowPath (percorso) ed ho il posizionamento delle macchina allora il mio riferimento per posizionarmi sarà il punto del percorso tenendo conto delle sue trasformazioni.
+//                         if (ASI.svgElement.length > 0 && tagObj.tagType == 15) transform(ASI, tagObj.value / Scale * 3.543);
 
-                        if (tagObj.tagType == 12 && ASI.activeSequence != tagObj.value) {
-                            if (tagObj.value == true) ASI.activeSequence = tagObj;
-                            else ASI.activeSequence = false;
-                        }
-                    }
-                });
+//                         if (tagObj.tagType == 12 && ASI.activeSequence != tagObj.value) {
+//                             if (tagObj.value == true) ASI.activeSequence = tagObj;
+//                             else ASI.activeSequence = false;
+//                         }
+//                     }
+//                 });
 
-                // Gestione Fault e Warning
-                faultArray = jsonData.filter(function (data) {
-                    return data.value != null && data.value != false && data.tagType == 1;
-                });
+//                 // Gestione Fault e Warning
+//                 faultArray = jsonData.filter(function (data) {
+//                     return data.value != null && data.value != false && data.tagType == 1;
+//                 });
 
-                ASIArray.filter(function (asiObj) {
-                    return asiObj.hasFault == true && asiObj.persistent == true && this.findIndex(function (asiInFault) {
-                        return asiObj.ASI.startsWith(asiInFault);
-                    }) == -1;
-                }, faultArray.map(function (item) {
-                    if (item.asi) return item.asi.split(',');
-                }).flat().filter(onlyUnique)).forEach(function (asiItem) {
-                    asiItem.hasFault = false;
-                    asiItem.svgElement.forEach(e => e.grpObj.querySelector(".fault").remove());
-                });
+//                 ASIArray.filter(function (asiObj) {
+//                     return asiObj.hasFault == true && asiObj.persistent == true && this.findIndex(function (asiInFault) {
+//                         return asiObj.ASI.startsWith(asiInFault);
+//                     }) == -1;
+//                 }, faultArray.map(function (item) {
+//                     if (item.asi) return item.asi.split(',');
+//                 }).flat().filter(onlyUnique)).forEach(function (asiItem) {
+//                     asiItem.hasFault = false;
+//                     asiItem.svgElement.forEach(e => e.grpObj.querySelector(".fault").remove());
+//                 });
 
-                ASIArray.filter(function (asiObj) {
-                    return asiObj.hasFault == false && asiObj.persistent == true && this.findIndex(function (asiInFault) {
-                        return asiObj.ASI.startsWith(asiInFault);
-                    }) != -1;
-                }, faultArray.map(function (item) {
-                    if (item.asi) return item.asi.split(',');
-                }).flat().filter(onlyUnique)).forEach(function (asiItem) {
-                    asiItem.hasFault = true;
-                    asiItem.svgElement.forEach(el => {
-                        var faultRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-                        faultRect.setAttributeNS(null, "class", 'fault');
-                        faultRect.setAttributeNS(null, "width", el.grpObj.getBBox().width);
-                        faultRect.setAttributeNS(null, "height", el.grpObj.getBBox().height);
-                        faultRect.setAttributeNS(null, "x", el.grpObj.getBBox().x);
-                        faultRect.setAttributeNS(null, "y", el.grpObj.getBBox().y);
-                        el.grpObj.appendChild(faultRect);
-                    })
-                });
-            }
-        };
+//                 ASIArray.filter(function (asiObj) {
+//                     return asiObj.hasFault == false && asiObj.persistent == true && this.findIndex(function (asiInFault) {
+//                         return asiObj.ASI.startsWith(asiInFault);
+//                     }) != -1;
+//                 }, faultArray.map(function (item) {
+//                     if (item.asi) return item.asi.split(',');
+//                 }).flat().filter(onlyUnique)).forEach(function (asiItem) {
+//                     asiItem.hasFault = true;
+//                     asiItem.svgElement.forEach(el => {
+//                         var faultRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+//                         faultRect.setAttributeNS(null, "class", 'fault');
+//                         faultRect.setAttributeNS(null, "width", el.grpObj.getBBox().width);
+//                         faultRect.setAttributeNS(null, "height", el.grpObj.getBBox().height);
+//                         faultRect.setAttributeNS(null, "x", el.grpObj.getBBox().x);
+//                         faultRect.setAttributeNS(null, "y", el.grpObj.getBBox().y);
+//                         el.grpObj.appendChild(faultRect);
+//                     })
+//                 });
+//             }
+//         };
 
-        physicalStatexmlHttp.addEventListener('loadend', function () {
-            physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, pUrl, Scale);
-        });
+//         physicalStatexmlHttp.addEventListener('loadend', function () {
+//             physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, pUrl, Scale);
+//         });
 
-        physicalStatexmlHttp.open("GET", pUrl, true);
+//         physicalStatexmlHttp.open("GET", pUrl, true);
 
-        physicalStatexmlHttp.send(null);
-    } else physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, pUrl, Scale);
-}
+//         physicalStatexmlHttp.send(null);
+//     } else physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, pUrl, Scale);
+// }
 
 export function dispose() {
     if (logycalStatexmlHttp) logycalStatexmlHttp.abort();
