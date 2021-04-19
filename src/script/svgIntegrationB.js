@@ -1,3 +1,5 @@
+import pallet from "../img/Components/pallet.svg"
+
 /* eslint-disable */
 var ASIArray;
 var logycalStateTimer;
@@ -13,7 +15,6 @@ var logycalStateUrl;
 var physicalStateUrl;
 var svgContainer;
 var selectedFloor = 1;
-var svgdoc;
 var gpart, gArrows;
 var htmlCont;
 var objContainer;
@@ -22,36 +23,36 @@ var btnFault;
 var btnWarning;
 var contDiv;
 var rootGroup;
+var demoData;
 
 export function SVG(elem, cfg) {
     logycalStateUrl = cfg.Provider;
     physicalStateUrl = cfg.Psm;
 
+    demoData = cfg.data;
+
     var Scale = cfg.Scale ? cfg.Scale : 1;
     var Rotation = cfg.Rotation ? cfg.Rotation : 0;
 
-    objContainer = elem;
-    htmlCont = elem.parentElement;
-    svgdoc = elem.contentDocument;
-    svgContainer = svgdoc.getElementById("svgContainer");
+    svgContainer = elem
     svgContainer.style.pointerEvents = 'none';
-    rootGroup = svgdoc.getElementById('root');
-    svg = svgdoc.getElementById("gLAYOUT");
-    gpart = svgdoc.createElementNS("http://www.w3.org/2000/svg", "svg");
+    rootGroup = elem.getElementById('root');
+    svg = elem.getElementById("gLAYOUT");
+    gpart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     gpart.setAttributeNS(null, "id", "gpart");
     svg.appendChild(gpart);
-    gArrows = svgdoc.createElementNS("http://www.w3.org/2000/svg", "svg");
+    gArrows = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     gArrows.setAttributeNS(null, "id", "gArrows");
     svg.appendChild(gArrows);
     ASIArray = [];
 
     // creo la freccia che verrà assegnata come markerEnd della linea.
-    var arrow = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'path');
+    var arrow = document.createElementNS("http://www.w3.org/2000/svg", 'path');
     arrow.setAttributeNS(null, "d", "M0,0 L0,6 L9,3 z");
     svg.appendChild(arrow);
 
     // MARKER BLUE WAITING
-    var marker1 = svgdoc.createElementNS("http://www.w3.org/2000/svg", "marker");
+    var marker1 = document.createElementNS("http://www.w3.org/2000/svg", "marker");
     marker1.setAttributeNS(null, 'id', 'markerTriangolo1');
     marker1.setAttributeNS(null, "markerWidth", 10);
     marker1.setAttributeNS(null, "markerHeight", 10);
@@ -73,14 +74,14 @@ export function SVG(elem, cfg) {
     marker4.setAttributeNS(null, "fill", "yellow");
 
     // APPENDO I MARKER ALL SVG
-    var defs = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'defs')
+    var defs = document.createElementNS("http://www.w3.org/2000/svg", 'defs')
     svg.appendChild(defs);
 
     defs.appendChild(marker1);
     defs.appendChild(marker2);
     defs.appendChild(marker4);
 
-    var style = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'style');
+    var style = document.createElementNS("http://www.w3.org/2000/svg", 'style');
     style.innerHTML = ".statusLayer {fill: #044b94;opacity: 0.5;} .fault {fill: #FF0000;opacity: 0.5;}"
 
     defs.appendChild(style);
@@ -124,111 +125,111 @@ export function SVG(elem, cfg) {
     if (cfg.FloorFilterVisible == false) selectedFloor = 0;
 
     // POLLING LOGYCAL STATUS
-    logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, svgdoc, Rotation, Scale);
+    logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
 
     // POLLING PHYSICAL STATUS
     physicalStateTimer = setTimeout(physicalStateFetch, pTimerInterval, physicalStateUrl + '/psm/livestatus', Scale);
 
-    contDiv = document.createElement('div');
-    contDiv.style.zIndex = 1;
-    contDiv.style.position = 'absolute';
-    contDiv.className = 'd-flex flex-column';
-    htmlCont.insertBefore(contDiv, objContainer);
+    // contDiv = document.createElement('div');
+    // contDiv.style.zIndex = 1;
+    // contDiv.style.position = 'absolute';
+    // contDiv.className = 'd-flex flex-column';
+    // htmlCont.insertBefore(contDiv, objContainer);
 
     // AGGIUNGO IL FILTRO DEI PIANI
-    var req = new XMLHttpRequest();
+    // var req = new XMLHttpRequest();
 
-    req.open("GET", logycalStateUrl + "/Scada/getFloors", true);
+    // req.open("GET", logycalStateUrl + "/Scada/getFloors", true);
 
-    req.onload = function () {
-        if (req.readyState == 4 && req.status == 200) {
-            var data = JSON.parse(req.responseText);
-            var flDiv = document.createElement('div');
-            flDiv.id = "floorsFilter";
-            flDiv.setAttribute("class", "dropdown bg-white m-2");
-            var flButton = document.createElement('button');
-            flButton.setAttribute("class", "btn btn-outline-primary dropdown-toggle w-100");
-            flButton.setAttribute("data-toggle", "dropdown");
-            flButton.setAttribute("type", "button");
-            flButton.setAttribute("aria-haspopup", "true");
-            flButton.setAttribute("aria-expanded", "false");
-            flButton.setAttribute("id", "dropdownMenu2");
-            flButton.innerHTML = "Livello : 1";
-            flDiv.appendChild(flButton);
-            var flDivInt = document.createElement('div');
-            flDiv.appendChild(flDivInt);
-            flDivInt.setAttribute("aria-labelledby", "dropdownMenu2");
-            flDivInt.setAttribute("class", "dropdown-menu");
-            data.map(function (item) {
-                return item.PIANO;
-            }).filter(onlyUnique).forEach(function (val) {
-                var choiceButton = document.createElement('button');
-                choiceButton.setAttribute("class", "dropdown-item");
-                choiceButton.setAttribute("type", "button");
-                choiceButton.innerHTML = val;
-                choiceButton.onclick = function () {
-                    //Fermo la richiesta in corso.
-                    logycalStatexmlHttp.abort();
-                    //Fermo il timer.
-                    clearTimeout(logycalStateTimer);
-                    //Cancello il rendering attuale.
-                    ASIArray.filter(function (ASI) {
-                        return ASI.PIANO == selectedFloor;
-                    }).forEach(function (ASI) {
-                        clearPopovers();
+    // req.onload = function () {
+    //     if (req.readyState == 4 && req.status == 200) {
+    //         var data = JSON.parse(req.responseText);
+    //         var flDiv = document.createElement('div');
+    //         flDiv.id = "floorsFilter";
+    //         flDiv.setAttribute("class", "dropdown bg-white m-2");
+    //         var flButton = document.createElement('button');
+    //         flButton.setAttribute("class", "btn btn-outline-primary dropdown-toggle w-100");
+    //         flButton.setAttribute("data-toggle", "dropdown");
+    //         flButton.setAttribute("type", "button");
+    //         flButton.setAttribute("aria-haspopup", "true");
+    //         flButton.setAttribute("aria-expanded", "false");
+    //         flButton.setAttribute("id", "dropdownMenu2");
+    //         flButton.innerHTML = "Livello : 1";
+    //         flDiv.appendChild(flButton);
+    //         var flDivInt = document.createElement('div');
+    //         flDiv.appendChild(flDivInt);
+    //         flDivInt.setAttribute("aria-labelledby", "dropdownMenu2");
+    //         flDivInt.setAttribute("class", "dropdown-menu");
+    //         data.map(function (item) {
+    //             return item.PIANO;
+    //         }).filter(onlyUnique).forEach(function (val) {
+    //             var choiceButton = document.createElement('button');
+    //             choiceButton.setAttribute("class", "dropdown-item");
+    //             choiceButton.setAttribute("type", "button");
+    //             choiceButton.innerHTML = val;
+    //             choiceButton.onclick = function () {
+    //                 //Fermo la richiesta in corso.
+    //                 logycalStatexmlHttp.abort();
+    //                 //Fermo il timer.
+    //                 clearTimeout(logycalStateTimer);
+    //                 //Cancello il rendering attuale.
+    //                 ASIArray.filter(function (ASI) {
+    //                     return ASI.PIANO == selectedFloor;
+    //                 }).forEach(function (ASI) {
+    //                     clearPopovers();
 
-                        if (ASI.svgElement.length > 0) {
-                            ASI.svgElement.forEach(function (arrObj) {
-                                arrObj.grpObj.remove();
-                                if (arrObj.txtObj) arrObj.txtObj.remove();
-                            });
+    //                     if (ASI.svgElement.length > 0) {
+    //                         ASI.svgElement.forEach(function (arrObj) {
+    //                             arrObj.grpObj.remove();
+    //                             if (arrObj.txtObj) arrObj.txtObj.remove();
+    //                         });
 
-                            if (ASI.svgElement[0].seqObj) ASI.svgElement[0].seqObj.remove();
-                            var sl = svg.getElementById("sl" + ASI.ASI);
-                            if (sl) sl.remove();
+    //                         if (ASI.svgElement[0].seqObj) ASI.svgElement[0].seqObj.remove();
+    //                         var sl = svg.getElementById("sl" + ASI.ASI);
+    //                         if (sl) sl.remove();
 
-                            var lockIcon = svgdoc.getElementById("lock" + ASI.ASI);
-                            if (lockIcon) lockIcon.remove();
-                        }
+    //                         var lockIcon = svgdoc.getElementById("lock" + ASI.ASI);
+    //                         if (lockIcon) lockIcon.remove();
+    //                     }
 
-                        ASI.udcObjArr.forEach(function (udcItemArray) {
-                            udcItemArray.udcObj.remove();
-                        });
+    //                     ASI.udcObjArr.forEach(function (udcItemArray) {
+    //                         udcItemArray.udcObj.remove();
+    //                     });
 
-                        if (ASI.destObj) {
-                            ASI.svgElement[0].destObj.grpObj.remove();
-                        }
-                    });
-                    //Per il momento per comodità svuoto tutto l array.
-                    ASIArray = ASIArray.filter(function (ASI) {
-                        return ASI.PIANO != selectedFloor || ASI.PIANO == 0 || ASI.PIANO == null;
-                    });
+    //                     if (ASI.destObj) {
+    //                         ASI.svgElement[0].destObj.grpObj.remove();
+    //                     }
+    //                 });
+    //                 //Per il momento per comodità svuoto tutto l array.
+    //                 ASIArray = ASIArray.filter(function (ASI) {
+    //                     return ASI.PIANO != selectedFloor || ASI.PIANO == 0 || ASI.PIANO == null;
+    //                 });
 
-                    //Imposto la variabile del piano selezionato che verrà usata dalla query
-                    selectedFloor = val;
-                    //Aggiorno il testo del bottone.
-                    flButton.innerHTML = "Livello: " + val;
-                    //Rifaccio partire il timer.
-                    logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, svgdoc, Rotation, Scale, true);
-                };
+    //                 //Imposto la variabile del piano selezionato che verrà usata dalla query
+    //                 selectedFloor = val;
+    //                 //Aggiorno il testo del bottone.
+    //                 flButton.innerHTML = "Livello: " + val;
+    //                 //Rifaccio partire il timer.
+    //                 logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, svgdoc, Rotation, Scale, true);
+    //             };
 
-                flDivInt.appendChild(choiceButton);
-            });
+    //             flDivInt.appendChild(choiceButton);
+    //         });
 
-            contDiv.appendChild(flDiv);
-        }
-    };
+    //         contDiv.appendChild(flDiv);
+    //     }
+    // };
 
-    req.send();
+    // req.send();
 
-    var arrowDiv = document.createElement('div');
-    arrowDiv.setAttribute("class", "btn-group-toggle m-2 bg-white");
-    arrowDiv.setAttribute("data-toggle", "buttons");
-    arrowDiv.innerHTML = '<label class="btn btn-outline-primary w-100"><input type="checkbox" autocomplete="off">Show steps</label></div>'
-    arrowDiv.onclick = function (e) {
-        arrowFlag = !(e.target.classList.contains('active'));
-    }
-    contDiv.appendChild(arrowDiv);
+    // var arrowDiv = document.createElement('div');
+    // arrowDiv.setAttribute("class", "btn-group-toggle m-2 bg-white");
+    // arrowDiv.setAttribute("data-toggle", "buttons");
+    // arrowDiv.innerHTML = '<label class="btn btn-outline-primary w-100"><input type="checkbox" autocomplete="off">Show steps</label></div>'
+    // arrowDiv.onclick = function (e) {
+    //     arrowFlag = !(e.target.classList.contains('active'));
+    // }
+    // contDiv.appendChild(arrowDiv);
 }
 
 export function resetSequence(asi) {
@@ -575,16 +576,15 @@ function clearPopovers() {
 }
 
 function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
-    if (!svgdoc.getAnimations().some(a => {
+    if (!document.getAnimations().some(a => {
         return (a.playState == 'paused')
     }) || Force) {
         logycalStatexmlHttp = new XMLHttpRequest();
 
         logycalStatexmlHttp.onreadystatechange = function () {
-            if (logycalStatexmlHttp.readyState == 4 && logycalStatexmlHttp.status == 200) {
+            if (logycalStatexmlHttp.readyState == 4 && logycalStatexmlHttp.status == 200 || demoData) {
                 try {
-                    var data = JSON.parse(logycalStatexmlHttp.responseText);
-
+                    var data = demoData || JSON.parse(logycalStatexmlHttp.responseText);
                     // Se è specificata una scala faccio un ovverride dei dati dimensionali.
                     data = data.map(function (obj) {
                         obj.LARGHEZZA = obj.LARGHEZZA ? obj.LARGHEZZA / Scale : obj.LARGHEZZA;
@@ -639,8 +639,8 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                 // RENDERIUNG SCAFFALI
                                 if (ASI.ID_TIPO_COMPONENTE == 'S') {
                                     // SE SONO UNA CELLA DELLO SCAFFALE DEVO TROVARE L ELEMENTO SCAFFALE E FARE IL RENDERING Lì.
-                                    var rackOriginObjX = svgdoc.querySelector("[id*='" + ASI.SORG.substring(0, 4) + '.' + ASI.PARTITION + '.' + 'x' + "']");
-                                    var rackOriginObjZ = svgdoc.querySelector("[id*='" + ASI.SORG.substring(0, 4) + '.' + ASI.PARTITION + '.' + 'z' + "']");
+                                    var rackOriginObjX = document.querySelector("[id*='" + ASI.SORG.substring(0, 4) + '.' + ASI.PARTITION + '.' + 'x' + "']");
+                                    var rackOriginObjZ = document.querySelector("[id*='" + ASI.SORG.substring(0, 4) + '.' + ASI.PARTITION + '.' + 'z' + "']");
 
                                     // SE HO TROVATO ENTRAMBE LE DIRETTRICI DISEGNO LA PARTIZIONE.
                                     if (rackOriginObjX && rackOriginObjZ) {
@@ -675,8 +675,8 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                         var x2End = rackOriginObjZ.getPointAtLength(ASI.posLength * 3.543).x + deltaX;
                                         var y2End = rackOriginObjZ.getPointAtLength(ASI.posLength * 3.543).y + deltaY;
 
-                                        var partitionObj = svgdoc.createElementNS(svgdoc.rootElement.namespaceURI, 'polygon');
-                                        var pWrap = svgdoc.createElementNS(svgdoc.rootElement.namespaceURI, 'g');
+                                        var partitionObj = document.createElementNS("http://www.w3.org/2000/svg", 'polygon');
+                                        var pWrap = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                         pWrap.append(partitionObj);
 
                                         var points = "";
@@ -717,7 +717,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                 } else {
                                     // RENDERING DI TUTTO QUELLO CHE NON è SCAFFALE (CENSITO SUL FILE SVG DEL GRAFICO)
                                     //var elArray = svgdoc.querySelectorAll("[id*='" + ASI.SORG + "']")
-                                    var elArray = svgdoc.querySelectorAll("[id*='" + ASI.SORG + "']:not([id*='flowPath'])");
+                                    var elArray = document.querySelectorAll("[id*='" + ASI.SORG + "']:not([id*='flowPath'])");
                                     //Se non trovo corrispondenza dell'elemento nel file SVG scateno un errore.
                                     if (elArray.length == 0) console.error(ASI.SORG + " non trovato nell'SVG.")
                                     else elArray.forEach(function (ItemG, index) {
@@ -730,15 +730,15 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                             } else if (wL > 1.3 || wL <= 0.7) {
                                                 ASI.svg = ASI.svg.replace('rulliera.', 'rullieraM.');
                                             }
-                                        }
+                                        }   
 
-                                        var req = new XMLHttpRequest();
+                                        // var req = new XMLHttpRequest();
 
-                                        req.open("GET", ASI.svg.split(',')[index], true);
+                                        // req.open("GET", , true);
 
-                                        req.onload = function (e) {
+                                        return fetch(ASI.svg.split(',')[index]).then(function(response){
                                             var parser = new DOMParser();
-                                            var componentSvg = parser.parseFromString(req.responseText, "image/svg+xml");
+                                            var componentSvg = parser.parseFromString(response, "image/svg+xml");
                                             var g = componentSvg.getElementsByTagName('g')[0];
                                             var center;
 
@@ -751,7 +751,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                             if (ASI.ID_TIPO_COMPONENTE == 'T') {
                                                 var i = ASI.SORG.length + 1;
                                                 do {
-                                                    flowPath = svgdoc.querySelector("[id^='flowPath" + ASI.SORG.substring(0, i) + "']");
+                                                    flowPath = document.querySelector("[id^='flowPath" + ASI.SORG.substring(0, i) + "']");
                                                     i -= 1;
                                                     //Se sono una lettera fermo la ricerca.
                                                 } while (!flowPath && i > 1 && isNaN(ASI.SORG.charAt(i)) == false);
@@ -764,7 +764,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                             //Se non trovo alcun SVG associato all'item allora creo il gruppo attorno all'elemento individuato
                                             //Se trovo il file SVG allora lo posiziono sopra all'elemento esistente e lo rimuovo.
                                             if (!g) {
-                                                g = svgdoc.createElementNS(svgdoc.rootElement.namespaceURI, 'g');
+                                                g = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                                 gpart.appendChild(g);
 
                                                 ItemG.removeAttributeNS(null, 'id');
@@ -789,7 +789,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
 
                                                 var rTf = "";
 
-                                                var pWrap = svgdoc.createElementNS(svgdoc.rootElement.namespaceURI, 'g');
+                                                var pWrap = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                                 pWrap.appendChild(g);
 
                                                 if (!flowPath) {
@@ -799,9 +799,9 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                                     if (ItemG.getBBox().width > ItemG.getBBox().height) elRotation += 90;
                                                     if (elRotation) rTf = "rotate(" + elRotation + ' ' + center.x + ' ' + center.y + ")";
                                                 } else {
-                                                    var fpGRoup = svgdoc.getElementById('gMotion' + flowPath.id);
+                                                    var fpGRoup = document.getElementById('gMotion' + flowPath.id);
                                                     if (!fpGRoup) {
-                                                        fpGRoup = svgdoc.createElementNS(svgdoc.rootElement.namespaceURI, 'g');
+                                                        fpGRoup = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                                         fpGRoup.id = 'gMotion' + flowPath.id;
                                                         svg.appendChild(fpGRoup);
                                                     }
@@ -869,49 +869,49 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                             }
 
                                             obj.persistent = true;
-                                        };
+                                        });
 
-                                        req.send();
+                                        // req.send();
                                     });
                                 }
                             }
                         });
 
                         //Alla prima chiamata nascondo tutto quello che non deve essere visibile.
-                        if (!Force) {
-                            try {
-                                svgdoc.addEventListener('pointerover', (e) => {
-                                    if (e.target.parentElement) {
-                                        var statusLayer = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'rect');
-                                        statusLayer.setAttributeNS(null, "class", 'statusLayer');
-                                        statusLayer.style.pointerEvents = 'none'
-                                        statusLayer.setAttributeNS(null, "width", e.target.parentElement.getBBox().width);
-                                        statusLayer.setAttributeNS(null, "height", e.target.parentElement.getBBox().height);
-                                        statusLayer.setAttributeNS(null, "x", e.target.parentElement.getBBox().x);
-                                        statusLayer.setAttributeNS(null, "y", e.target.parentElement.getBBox().y);
-                                        e.target.parentElement.append(statusLayer);
-                                        e.target.parentElement.onpointerout = () => {
-                                            statusLayer.remove()
-                                        };
-                                    }
-                                });
+                        // if (!Force) {
+                        //     try {
+                        //         document.addEventListener('pointerover', (e) => {
+                        //             if (e.target.parentElement) {
+                        //                 var statusLayer = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+                        //                 statusLayer.setAttributeNS(null, "class", 'statusLayer');
+                        //                 statusLayer.style.pointerEvents = 'none'
+                        //                 statusLayer.setAttributeNS(null, "width", e.target.parentElement.getBBox().width);
+                        //                 statusLayer.setAttributeNS(null, "height", e.target.parentElement.getBBox().height);
+                        //                 statusLayer.setAttributeNS(null, "x", e.target.parentElement.getBBox().x);
+                        //                 statusLayer.setAttributeNS(null, "y", e.target.parentElement.getBBox().y);
+                        //                 e.target.parentElement.append(statusLayer);
+                        //                 e.target.parentElement.onpointerout = () => {
+                        //                     statusLayer.remove()
+                        //                 };
+                        //             }
+                        //         });
 
-                                svgdoc.addEventListener("pointerout", function (e) {
-                                    if (e.target.parentElement) e.target.parentElement.querySelectorAll(".statusLayer").forEach(e => e.remove());
-                                });
+                        //         document.addEventListener("pointerout", function (e) {
+                        //             if (e.target.parentElement) e.target.parentElement.querySelectorAll(".statusLayer").forEach(e => e.remove());
+                        //         });
 
-                                svg.getElementById("macchine")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("catenarie")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("rulliere")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("Switcher")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("ralle")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("magazzino")?.setAttributeNS(null, 'visibility', 'hidden');
-                                svg.getElementById("flowpath")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("macchine")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("catenarie")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("rulliere")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("Switcher")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("ralle")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("magazzino")?.setAttributeNS(null, 'visibility', 'hidden');
+                        //         svg.getElementById("flowpath")?.setAttributeNS(null, 'visibility', 'hidden');
 
-                            } catch (e) {
-                                console.log(e);
-                            }
-                        }
+                        //     } catch (e) {
+                        //         console.log(e);
+                        //     }
+                        // }
                     }
 
                     //rimuovo tutti gli elementi che non sono + nella query della waTracking (non vanno + tracciati.)
@@ -985,18 +985,18 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                         return ASIArrayObj.ASI == item.DEST;
                                     });
                                     // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
-                                    var seqPath = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'path');
+                                    var seqPath = document.createElementNS("http://www.w3.org/2000/svg", 'path');
                                     if (svgItemDest && svgItemDest.svgElement.length > 0 && ASI.svgElement.length > 0) {
                                         gArrows.appendChild(seqPath);
                                         var destPoint = svgItemDest.svgElement[0].center;
                                         if (svgItemDest.svgElement[0].flowPath) {
                                             destPoint = svgItemDest.svgElement[0].flowPath.getPointAtLength(svgItemDest.PosX);
-                                            svgdoc.getElementById('gMotion' + svgItemDest.svgElement[0].flowPath.id).appendChild(seqPath);
+                                            document.getElementById('gMotion' + svgItemDest.svgElement[0].flowPath.id).appendChild(seqPath);
                                         }
                                         var sPoint =  ASI.svgElement[0].center;
                                         if (ASI.svgElement[0].flowPath){
                                             sPoint = ASI.svgElement[0].flowPath.getPointAtLength(ASI.PosX);
-                                            svgdoc.getElementById('gMotion' + ASI.svgElement[0].flowPath.id).appendChild(seqPath);
+                                            document.getElementById('gMotion' + ASI.svgElement[0].flowPath.id).appendChild(seqPath);
                                         }
 
                                         if (ASI.svgElement[0].flowPath || svgItemDest.svgElement[0].flowPath) seqPath.style.willChange = 'transform';
@@ -1087,7 +1087,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                 } else {
                                     var req = new XMLHttpRequest();
 
-                                    req.open("GET", item.svgUdc, true);
+                                    req.open("GET", pallet, true);
 
                                     req.onload = function (e) {
                                         var parser = new DOMParser();
@@ -1100,10 +1100,10 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
 
                                         // Se non ho trovato il file aggiungo un quadrato.
                                         if (!gUdc) {
-                                            gUdc = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'g');
+                                            gUdc = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                             gUdc.id = 'udc' + item.Id_Udc;
                                             // disegno l udc e come riferimento di posizione uso il centro del gruppo asi nell svg ex 'g2A01'
-                                            udc = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'rect');
+                                            udc = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
                                             udc.setAttributeNS(null, "width", width);
                                             udc.setAttributeNS(null, "height", height);
                                             udc.setAttributeNS(null, "x", 0);
@@ -1160,7 +1160,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                         req.open("GET", 'App/SVG/Icons/lock.svg', true);
                                         req.onload = function (e) {
                                             var parser = new DOMParser();
-                                            var lockIcon = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'g');
+                                            var lockIcon = document.createElementNS("http://www.w3.org/2000/svg", 'g');
                                             lockIcon.setAttributeNS(null, "id", "lock" + ASI.ASI);
                                             lockIcon.appendChild(parser.parseFromString(req.responseText, "image/svg+xml").getElementsByTagName('svg')[0]);
                                             lockIcon.childNodes[0].setAttributeNS(null, "width", 60);
@@ -1183,7 +1183,7 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
                                         req.send();
                                     },500);
                                 } else {
-                                    var lockIcon = svgdoc.getElementById("lock" + ASI.ASI);
+                                    var lockIcon = document.getElementById("lock" + ASI.ASI);
                                     ASI.lockIcon = null;
                                     if (lockIcon) lockIcon.remove();
                                 }
@@ -1202,17 +1202,17 @@ function logicalStateFetch(url, svgdoc, Rotation, Scale, Force) {
         };
 
         logycalStatexmlHttp.addEventListener('loadend', function () {
-            logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, svgdoc, Rotation, Scale);
+            if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
         });
 
         logycalStatexmlHttp.open("GET", url, true); // true for asynchronous
 
         logycalStatexmlHttp.send(null);
-    } else logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, svgdoc, Rotation, Scale);
+    } else if (!demoData) logycalStateTimer = setTimeout(logicalStateFetch, lTimerInterval, logycalStateUrl + "/Scada/0/" + selectedFloor, document, Rotation, Scale);
 }
 
 function physicalStateFetch(pUrl, Scale) {
-    if (!svgdoc.getAnimations().some(a => {
+    if (!document.getAnimations().some(a => {
         return (a.playState == 'paused')
     })) {
         physicalStatexmlHttp = new XMLHttpRequest();
@@ -1316,7 +1316,7 @@ function physicalStateFetch(pUrl, Scale) {
                 }).flat().filter(onlyUnique)).forEach(function (asiItem) {
                     asiItem.hasFault = true;
                     asiItem.svgElement.forEach(el => {
-                        var faultRect = svgdoc.createElementNS("http://www.w3.org/2000/svg", 'rect');
+                        var faultRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
                         faultRect.setAttributeNS(null, "class", 'fault');
                         faultRect.setAttributeNS(null, "width", el.grpObj.getBBox().width);
                         faultRect.setAttributeNS(null, "height", el.grpObj.getBBox().height);

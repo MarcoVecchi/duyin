@@ -1,24 +1,34 @@
 import './App.css';
-import svgLayout from './img/6603-17.svg';
+import  {ReactComponent as ReactLayout}  from './img/6603-17.svg';
 import { SVG } from './script/svgIntegrationB';
+import data from './data/data.json';
 
-const htmlContainer  =  <object id="objContainer" data={svgLayout} />;
-
-function App() {
+function App(props) {
   return (
     <div className="App">
-      {htmlContainer}
+      <Layout></Layout>
     </div>
   );
 }
 
-const cfg = {
-  Provider: 'http://localhost:10001',
-  Psm: 'http://localhost:10002',
-  // Rotation: 270,
-  Scale: 100
+function Layout(props){
+  return (
+  <svg width='3000px' height="3000px">
+    <ReactLayout></ReactLayout>
+  </svg>
+  );
 }
 
-setTimeout(function(){SVG(document.getElementById("objContainer"), cfg)},3000);
+const cfg = {
+  Provider: './data/data.json',
+  Psm: 'http://localhost:10002',
+  // Rotation: 270,
+  Scale: 100,
+  data: data
+}
+
+setTimeout(function(){SVG(document.getElementById("svgContainer"), cfg)},10000);
+
+// console.log(document.getElementById("svgContainer"));
 
 export default App;
