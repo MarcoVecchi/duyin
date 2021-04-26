@@ -545,17 +545,15 @@ function Layout (props) {
     const [stock, setStock] = useState(data.map(d => { return { width:d.LARGHEZZA, height:d.PROFONDITA, Scale:100, pos:d.SORG, Id_Udc: d.Id_Udc } }));   
 
     // useEffect(() => {
-    //     // if (1 == 0) setStock();
+    //     (data.map(d => { return { width:d.LARGHEZZA, height:d.PROFONDITA, Scale:100, pos:d.SORG, Id_Udc: d.Id_Udc } }));
     // });
 
-    // setStock(data.map(d => { return (<LoadingUnit key={d.Id_Udc} width={d.LARGHEZZA} height={d.PROFONDITA} Scale={100} pos={d.SORG}></LoadingUnit>) }));
+    var loadingUnitChildren = stock.map(d => { return (<LoadingUnit key={d.Id_Udc} width={d.width} height={d.height} Scale={100} pos={d.pos}></LoadingUnit>) });
 
-    stock.forEach(d => {
-        loadingUnit.push(<LoadingUnit key={d.Id_Udc} width={d.width} height={d.height} Scale={100} pos={d.pos}></LoadingUnit>);
-    });
+    console.log(loadingUnitChildren);
 
     return (
-            <SvgLayout loadingunit={loadingUnit} style={{display:'block'}} width="100%" height="100%"></SvgLayout>
+            <SvgLayout loadingunit={loadingUnitChildren} style={{display:'block'}} width="100%" height="100%"></SvgLayout>
     );
 }
 
