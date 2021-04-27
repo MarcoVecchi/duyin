@@ -5640,6 +5640,7 @@ function Svg660317(props) {
           d="M1052.63 1464v445.711"
         />
       </g>
+      <g>{props.partition}</g>
       <g>{props.loadingunit}</g>
     </svg>
   );

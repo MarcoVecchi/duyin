@@ -1,8 +1,9 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, Suspense} from 'react';
 import ReactDOM from 'react-dom'
-import LoadingUnit from '../script/LoadingUnit';
-import SvgLayout from '../script/6603-17'
-import {getRelativeXY, decomposeMatrix, deltaTransformPoint} from '../script/utils';
+import LoadingUnit from './LoadingUnit';
+import Partition from './Partition';
+import SvgLayout from '../svgComponent/layout/6603-17'
+import {arrayUnique} from '../../script/utils'
 
 function Layout (props) {
     var ASIArray = [];
@@ -540,20 +541,18 @@ function Layout (props) {
     // }
     // contDiv.appendChild(arrowDiv);
 
-    // this.logicalStateFetch();
 
-    const [stock, setStock] = useState(data.map(d => { return { width:d.LARGHEZZA, height:d.PROFONDITA, Scale:100, pos:d.SORG, Id_Udc: d.Id_Udc } }));   
+    
+    var partitionChildren = [];
+    var loadingUnitChildren = [];
 
-    // useEffect(() => {
-    //     (data.map(d => { return { width:d.LARGHEZZA, height:d.PROFONDITA, Scale:100, pos:d.SORG, Id_Udc: d.Id_Udc } }));
-    // });
-
-    var loadingUnitChildren = stock.map(d => { return (<LoadingUnit key={d.Id_Udc} width={d.width} height={d.height} Scale={100} pos={d.pos}></LoadingUnit>) });
-
-    console.log(loadingUnitChildren);
-
+    partitionChildren = arrayUnique(data, ['SORG']).map(d => { return (<Partition key={d.SORG} svg={d.svg} Scale={100} pos={d.SORG}></Partition>) });
+    loadingUnitChildren = data.map(d => { return (<LoadingUnit key={d.Id_Udc} width={d.LARGHEZZA} height={d.PROFONDITA} Scale={100} pos={d.SORG}></LoadingUnit>) });
+    
     return (
-            <SvgLayout loadingunit={loadingUnitChildren} style={{display:'block'}} width="100%" height="100%"></SvgLayout>
+        <Suspense>
+            <SvgLayout partition={partitionChildren} loadingunit={loadingUnitChildren} style={{display:'block'}} width="100%" height="100%"></SvgLayout>
+        </Suspense>
     );
 }
 

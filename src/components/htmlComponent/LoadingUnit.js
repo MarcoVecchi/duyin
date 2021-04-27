@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react'
-import SvgLoadingUnit from "./pallet"
+import SvgLoadingUnit from "../svgComponent/obj/pallet"
 
 function LoadingUnit(props){
     const[pos, setPos] = useState(props.pos);

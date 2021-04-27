@@ -35,4 +35,12 @@ function deltaTransformPoint(matrix, point) {
     return { x: dx, y: dy };
 }
 
-export { getRelativeXY, decomposeMatrix, deltaTransformPoint}
+function arrayUnique(arrayObj, keys) {
+    return arrayObj.filter((s => o => 
+        (k => !s.has(k) && s.add(k))
+        (keys.map(k => o[k]).join('|'))
+    )
+    (new Set()));
+}
+
+export { getRelativeXY, decomposeMatrix, deltaTransformPoint, arrayUnique }

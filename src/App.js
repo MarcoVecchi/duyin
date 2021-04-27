@@ -1,7 +1,7 @@
 import './App.css';
 import React, { Component } from 'react';
 import data from './data/data.json';
-import Layout from './script/Layout'
+import Layout from './components/htmlComponent/Layout'
 
 function App(props) {
   return (
