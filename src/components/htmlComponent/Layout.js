@@ -1,13 +1,11 @@
 import React, {useState, useEffect, Suspense} from 'react';
 import ReactDOM from 'react-dom'
-import LoadingUnit from './LoadingUnit';
-import Partition from './Partition';
+import SvgObj from './SvgObj';
 import SvgLayout from '../svgComponent/layout/6603-17'
 import {arrayUnique} from '../../script/utils'
 
 function Layout (props) {
     var ASIArray = [];
-    var Scale = 100;
     var arrowFlag = false;
     var data;
     var gpart;
@@ -157,14 +155,6 @@ function Layout (props) {
     //                 else elArray.forEach(function (ItemG, index) {
     //                     //Calcolo rapporto tra la larghezza e la lunghezza dell'elemento con l obiettivo di caricare il file con le proporzioni + simili alle dimensioni dell'elemento stesso.
     //                     var wL = ItemG.getBBox().width / ItemG.getBBox().height;
-    //                     //Capire per quali file ha senso gestire la misura diversa.
-    //                     if (ASI.svg && ASI.svg.includes('rulliera.')) {
-    //                         if (wL > 2 || wL < 0.5) {
-    //                             ASI.svg = ASI.svg.replace('rulliera.', 'rullieraL.');
-    //                         } else if (wL > 1.3 || wL <= 0.7) {
-    //                             ASI.svg = ASI.svg.replace('rulliera.', 'rullieraM.');
-    //                         }
-    //                     }
 
     //                     // console.log('../img/Components/rulliera/rullieraM.svg' === ASI.svg.split(',')[index])
     //                     // console.log(import(/* webpackIgnore: true */ASI.svg.split(',')[index]));
@@ -540,19 +530,18 @@ function Layout (props) {
     //     arrowFlag = !(e.target.classList.contains('active'));
     // }
     // contDiv.appendChild(arrowDiv);
-
-
     
     var partitionChildren = [];
     var loadingUnitChildren = [];
 
-    partitionChildren = arrayUnique(data, ['SORG']).map(d => { return (<Partition key={d.SORG} svg={d.svg} Scale={100} pos={d.SORG}></Partition>) });
-    loadingUnitChildren = data.map(d => { return (<LoadingUnit key={d.Id_Udc} width={d.LARGHEZZA} height={d.PROFONDITA} Scale={100} pos={d.SORG}></LoadingUnit>) });
+    partitionChildren = arrayUnique(data, ['SORG']).map(d => { return (<SvgObj key={d.SORG} svg={d.svg} refId={d.SORG}></SvgObj>) });
+    
+    loadingUnitChildren = data.filter(d => d.Id_Udc != null).map(d => { 
+        return (<SvgObj key={d.Id_Udc} width={d.LARGHEZZA / props.Scale * 3.543} height={d.PROFONDITA / props.Scale * 3.543} svg={d.svgUdc} refId={d.SORG}></SvgObj>) 
+    });
     
     return (
-        <Suspense>
-            <SvgLayout partition={partitionChildren} loadingunit={loadingUnitChildren} style={{display:'block'}} width="100%" height="100%"></SvgLayout>
-        </Suspense>
+        <SvgLayout partition={partitionChildren} loadingunit={loadingUnitChildren}></SvgLayout>
     );
 }
 

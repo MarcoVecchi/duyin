@@ -5,7 +5,7 @@ import Layout from './components/htmlComponent/Layout'
 
 function App(props) {
   return (
-    <Layout data={data}></Layout> 
+    <Layout data={data} Scale={100}></Layout> 
   );
 }
 
