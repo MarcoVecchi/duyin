@@ -5,7 +5,7 @@ function SvgObj(props) {
     const[y, setY] = useState(0);
     const[width, setWidth] = useState(props.width || 0);
     const[height, setHeight] = useState(props.height || 0);
-    const[transform, setTransform] = useState('');
+    const[transform, setTransform] = useState('rotate(90)');
 
     if (!props.refId) throw 'refId missing'
  
@@ -15,6 +15,7 @@ function SvgObj(props) {
         setY(el.getBBox().y);
         if (!width) setWidth(el.getBBox().width);
         if (!height) setHeight(el.getBBox().height);
+        setTransform(el.getAttributeNS(null, 'transform'));
       });
     });
 
@@ -23,7 +24,9 @@ function SvgObj(props) {
 
       return (
         <Suspense fallback="<div>Loading...</div>">
+          <g transform={transform}>
             <DynObj  x={x} y={y} width={width} height={height}></DynObj>
+          </g>
         </Suspense>
       );
     } else return (<div></div>);

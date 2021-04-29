@@ -11,8 +11,6 @@ function SvgRulliera(props) {
       xmlSpace="preserve"
       {...props}
     >
-      <g id="small_elements-2">
-        <g id="_rulliera_">
           <path
             d="M22.7 1.4v27.3c0 .2-.2.5-.4.5H3.5c-.2 0-.4-.3-.4-.5V1.4c0-.2.2-.4.4-.4h18.7c.2 0 .5.2.5.4z"
             id="path2"
@@ -164,8 +162,6 @@ function SvgRulliera(props) {
             strokeMiterlimit={10}
             d="M25.4 29.6h-2"
           />
-        </g>
-      </g>
     </svg>
   );
 }
